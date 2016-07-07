@@ -1,15 +1,11 @@
 ﻿#include "Connection.h"
+#include "Client.h"
 
 Connection::Connection( tcp::socket socket ) :
 	m_socket( std::move( socket ) ) { }
 
 void Connection::start( ) {
 	read( );
-	CMessage msg;
-	WRITE( msg, eMessage::AddChatMessage );
-	std::string texty = "hey";
-	WRITE( msg, texty);
-	write( msg );
 }
 
 void Connection::read( ) {
@@ -34,26 +30,33 @@ void Connection::handle_read( const boost::system::error_code& ec, std::size_t l
 			CMessage msg( strData );
 			READ( msg, eMessage, type );
 
-			if(type == eMessage::AddChatMessage ) {
+			if ( type == eMessage::AddChatMessage ) {
 				std::stringstream ss;
 				READ( msg, std::string, texty );
+				ss << "Server " << texty;
+				logFn( ss.str( ) );
 			}
 			read( );
 		}
+	}
+	else {
+		m_socket.close( );
+		logFn( "Client disconnected" );
 	}
 }
 
 void Connection::do_write( ) {
 	boost::asio::async_write( m_socket,
-		boost::asio::buffer( m_message_queue.front( ) ),
-		boost::asio::transfer_exactly( m_message_queue.front( ).size( ) ),
-		std::bind( &Connection::handle_write, shared_from_this( ), std::placeholders::_1, std::placeholders::_2 ) );
+	                          boost::asio::buffer( m_message_queue.front( ) ),
+	                          boost::asio::transfer_exactly( m_message_queue.front( ).size( ) ),
+	                          std::bind( &Connection::handle_write, shared_from_this( ), std::placeholders::_1, std::placeholders::_2 ) );
 }
 
 void Connection::handle_write( const boost::system::error_code& ec, std::size_t length ) {
 	if ( ec ) {
 		if ( m_socket.is_open( ) ) {
 			m_socket.close( );
+			logFn( "Client disconnected" );
 		}
 	}
 	else {

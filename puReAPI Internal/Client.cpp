@@ -56,7 +56,9 @@ void Client::handle_read( const boost::system::error_code& ec, std::size_t lengt
 
 			if ( type == eMessage::AddChatMessage ) {
 				READ( msg, std::string, texty );
-				logFn( texty );
+				std::stringstream ss_;
+				ss_ << "Client " << texty;
+				logFn( ss_.str( ) );
 			}
 
 			read( );

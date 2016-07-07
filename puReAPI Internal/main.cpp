@@ -86,32 +86,32 @@ void Init( HMODULE hMod ) {
 		if ( dwPid && dwPid == GetCurrentProcessId( ) ) {
 			StartServer( );
 		}
-	}
+		else {
+			/*
+			client aka keybinder
+			*/
+			/*
+			Inject into GTA and start Server
+			*/
 
-	/*
-	client aka keybinder
-	*/
-	/*
-	Inject into GTA and start Server
-	*/
+			boost::asio::io_service io;
+			std::shared_ptr< Client > client = std::make_shared< Client >( io );
+			bool connected = client->Connect( "127.0.0.1", 8055 );
+			while ( !connected ) {
+				/*Can't connect, load dll and start server*/
+				int res = Inject( hMod );
+				while ( !res ) {
+					res = Inject( hMod );
+					std::this_thread::sleep_for( std::chrono::milliseconds( 500 ) );
+				}
 
-	int res = Inject( hMod );
-	logFn( std::to_string( res ) );
-	while ( !res ) {
-		res = Inject( hMod );
-		logFn( std::to_string( res ) );
-		std::this_thread::sleep_for( std::chrono::milliseconds( 500 ) );
+				connected = client->Connect( "127.0.0.1", 8055 );
+				std::this_thread::sleep_for( std::chrono::milliseconds( 500 ) );
+			}
+			client->startRead( );
+			io.run( );
+		}
 	}
-
-	boost::asio::io_service io;
-	std::shared_ptr< Client > client = std::make_shared< Client >( io );
-	bool connected = client->Connect( "127.0.0.1", 8055 );
-	while ( !connected ) {
-		connected = client->Connect( "127.0.0.1", 8055 );
-		std::this_thread::sleep_for( std::chrono::milliseconds( 500 ) );
-	}
-	client->startRead( );
-	io.run( );
 }
 
 int WINAPI DllMain( HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved ) {
