@@ -21,11 +21,11 @@ class CMessage {
 	typedef boost::archive::text_oarchive oarchive;
 public:
 	CMessage( void ) {
-		m_oarchive = std::make_shared<oarchive>( m_ss );
+		m_oarchive = std::make_shared< oarchive >( m_ss );
 	}
 
 	CMessage( std::string& data ) : m_ss( data ) {
-		m_iarchive = std::make_shared<iarchive>( m_ss );
+		m_iarchive = std::make_shared< iarchive >( m_ss );
 	}
 
 	~CMessage( ) {
@@ -33,14 +33,14 @@ public:
 		m_iarchive.reset( );
 	}
 
-	template<class T>
+	template <class T>
 	CMessage& operator<<( const T& t ) {
 		( *m_oarchive ) & t;
 		return *this;
 	}
 
-	template<class T>
-	CMessage& operator >> ( T& t ) {
+	template <class T>
+	CMessage& operator >>( T& t ) {
 		( *m_iarchive ) & t;
 		return *this;
 	}
@@ -51,6 +51,6 @@ public:
 
 private:
 	std::stringstream m_ss;
-	std::shared_ptr<iarchive> m_iarchive;
-	std::shared_ptr<oarchive> m_oarchive;
+	std::shared_ptr< iarchive > m_iarchive;
+	std::shared_ptr< oarchive > m_oarchive;
 };

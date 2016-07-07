@@ -1,10 +1,7 @@
 ﻿#include "Client.h"
 
 Client::Client( boost::asio::io_service& io ) :
-	m_socket( io )
-{
-	
-}
+	m_socket( io ) { }
 
 bool Client::Connect( const std::string& ip, const uint32_t port ) {
 	tcp::resolver resolver( m_socket.get_io_service( ) );
@@ -17,7 +14,5 @@ bool Client::Connect( const std::string& ip, const uint32_t port ) {
 	if ( ec ) {
 		return false;
 	}
-	else {
-		return true;
-	}
+	return true;
 }
