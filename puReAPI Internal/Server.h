@@ -1,10 +1,17 @@
 ﻿#pragma once
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-#include <boost/asio.hpp>
-#include "Message.hpp"
+#include "Connection.h"
+
+using boost::asio::ip::tcp;
 
 class Server {
 public:
-	void Start( uint32_t port );
+	explicit Server( boost::asio::io_service& io, uint32_t port );
+	void Start( void );
+
+private:
+	void handle_accept( const boost::system::error_code& ec );
+
+private:
+	tcp::socket m_socket;
+	tcp::acceptor m_acceptor;
 };

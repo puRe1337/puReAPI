@@ -27,6 +27,9 @@
     <ClCompile Include="Client.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Connection.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Server.h">
@@ -37,6 +40,9 @@
     </ClInclude>
     <ClInclude Include="Message.hpp">
       <Filter>Shared Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Connection.h">
+      <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -6,10 +6,11 @@
 
 using boost::asio::ip::tcp;
 
-class Client {
+class Connection : public std::enable_shared_from_this<Connection> {
 public:
-	explicit Client( boost::asio::io_service& io );
-	bool Connect( const std::string& ip, const uint32_t port );
+	explicit Connection( tcp::socket socket );
+	void start( void );
+
 private:
 	tcp::socket m_socket;
 };
