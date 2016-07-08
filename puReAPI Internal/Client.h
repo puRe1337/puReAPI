@@ -29,11 +29,4 @@ private:
 	std::deque< std::string > m_message_queue;
 	boost::asio::streambuf m_buff_streambuf;
 };
-
-static auto logFn = []( const std::string& text ) {
-	std::ofstream file( "C:\\Temp\\puReAPI-Log.log", std::ofstream::app );
-	if ( file.is_open( ) ) {
-		file << text << "\n";
-		file.close( );
-	}
-};
+extern std::shared_ptr<Client> g_pClient;

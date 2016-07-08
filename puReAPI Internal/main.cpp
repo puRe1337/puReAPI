@@ -7,7 +7,6 @@ int Inject( HMODULE hMod ) {
 	char szDLLPath[ MAX_PATH + 1 ] = { 0 };
 	DWORD dwPId = 0;
 	BOOL bRetn;
-
 	GetModuleFileName( ( HMODULE )hMod, szDLLPath, sizeof( szDLLPath ) );
 
 	HWND hWnd = FindWindow( 0, "GTA:SA:MP" );
@@ -61,19 +60,13 @@ int Inject( HMODULE hMod ) {
 	return 1;
 }
 
-extern "C" __declspec( dllexport ) void asdf( ) {
-	MessageBox( 0, "hey", 0, 0 );
-}
-
 void StartServer( ) {
 	/*
 	we're inside gta process
 	*/
 	boost::asio::io_service io;
-	logFn( "We're inside the gta process" );
 	Server server( io, 8055 );
 	server.Start( );
-	logFn( "Server started" );
 	io.run( );
 }
 
@@ -90,13 +83,9 @@ void Init( HMODULE hMod ) {
 			/*
 			client aka keybinder
 			*/
-			/*
-			Inject into GTA and start Server
-			*/
-
 			boost::asio::io_service io;
-			std::shared_ptr< Client > client = std::make_shared< Client >( io );
-			bool connected = client->Connect( "127.0.0.1", 8055 );
+			g_pClient = std::make_shared< Client >( io );
+			bool connected = g_pClient->Connect( "127.0.0.1", 8055 );
 			while ( !connected ) {
 				/*Can't connect, load dll and start server*/
 				int res = Inject( hMod );
@@ -105,10 +94,10 @@ void Init( HMODULE hMod ) {
 					std::this_thread::sleep_for( std::chrono::milliseconds( 500 ) );
 				}
 
-				connected = client->Connect( "127.0.0.1", 8055 );
+				connected = g_pClient->Connect( "127.0.0.1", 8055 );
 				std::this_thread::sleep_for( std::chrono::milliseconds( 500 ) );
 			}
-			client->startRead( );
+			g_pClient->startRead( );
 			io.run( );
 		}
 	}

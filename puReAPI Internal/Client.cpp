@@ -1,5 +1,7 @@
 ﻿#include "Client.h"
 
+std::shared_ptr<Client> g_pClient = nullptr;
+
 Client::Client( boost::asio::io_service& io ) :
 	m_socket( io ) { }
 
@@ -11,14 +13,11 @@ bool Client::Connect( const std::string& ip, const uint32_t port ) {
 
 	boost::system::error_code ec;
 
-	logFn( "Trying to connect" );
 	boost::asio::connect( m_socket, endpoint_it, ec );
 
 	if ( ec ) {
-		logFn( "Connecting failed" );
 		return false;
 	}
-	logFn( "Connected" );
 	return true;
 }
 
@@ -55,10 +54,7 @@ void Client::handle_read( const boost::system::error_code& ec, std::size_t lengt
 			READ( msg, eMessage, type );
 
 			if ( type == eMessage::AddChatMessage ) {
-				READ( msg, std::string, texty );
-				std::stringstream ss_;
-				ss_ << "Client " << texty;
-				logFn( ss_.str( ) );
+				//respone
 			}
 
 			read( );
