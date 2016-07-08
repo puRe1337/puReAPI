@@ -32,10 +32,32 @@ void Connection::handle_read( const boost::system::error_code& ec, std::size_t l
 
 			if ( type == eMessage::AddChatMessage ) {
 				READ( msg, std::string, strText );
-				AddChatMessage( strText );
+				int res = AddChatMessage( strText );
+				{
+					CMessage oMsg;
+					WRITE( oMsg, res );
+					write( oMsg );
+				}
 			} else if(type == eMessage::SendChat ) {
 				READ( msg, std::string, strText );
-				SendChat( strText );
+				int res = SendChat( strText );
+				{
+					CMessage oMsg;
+					WRITE( oMsg, res );
+					write( oMsg );
+				}
+			}
+			else if(type == eMessage::GetPlayerPos ) {
+				float fX, fY, fZ;
+				int res = GetPlayerPos( fX, fY, fZ );
+				{
+					CMessage oMsg;
+					WRITE( oMsg, res );
+					WRITE( oMsg, fX );
+					WRITE( oMsg, fY );
+					WRITE( oMsg, fZ );
+					write( oMsg );
+				}
 			}
 			read( );
 		}

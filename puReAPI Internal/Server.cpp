@@ -1,7 +1,7 @@
 ﻿#include "Server.h"
 
-Server::Server( boost::asio::io_service& io, uint32_t port ) :
-	m_acceptor( io, tcp::endpoint( tcp::v4( ), port ), false ),
+Server::Server( boost::asio::io_service& io ) :
+	m_acceptor( io, tcp::endpoint( tcp::v4( ), g_uiPort ), false ),
 	m_socket( io ) { }
 
 void Server::Start( ) {

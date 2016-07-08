@@ -50,10 +50,13 @@
     <ClInclude Include="Connection.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="MessageHandler.h">
-      <Filter>Quelldateien</Filter>
-    </ClInclude>
     <ClInclude Include="Calls.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="MessageHandler.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Config.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

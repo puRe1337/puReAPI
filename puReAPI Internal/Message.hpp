@@ -10,7 +10,8 @@
 
 enum class eMessage : int {
 	SendChat = 1,
-	AddChatMessage
+	AddChatMessage,
+	GetPlayerPos
 };
 
 #define READ(MSG, TYPE, VARNAME) TYPE VARNAME; MSG >> VARNAME;
@@ -26,6 +27,13 @@ public:
 
 	CMessage( std::string& data ) : m_ss( data ) {
 		m_iarchive = std::make_shared< iarchive >( m_ss );
+	}
+
+	CMessage& operator =( const CMessage& msg ) {
+		m_ss = std::stringstream( msg.data( ) );
+		if ( !m_iarchive )
+			m_iarchive = std::make_shared< iarchive >( m_ss );
+		return *this;
 	}
 
 	~CMessage( ) {

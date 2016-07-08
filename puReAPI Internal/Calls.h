@@ -5,3 +5,4 @@
 
 EXPORTDLL int AddChatMessage( const char* szText );
 EXPORTDLL int SendChat( const char* szText );
+EXPORTDLL int GetPlayerPos( float& fX, float& fY, float& fZ );

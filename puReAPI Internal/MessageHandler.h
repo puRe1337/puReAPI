@@ -6,5 +6,6 @@
 DWORD FindPattern( DWORD addr, DWORD len, BYTE *bMask, char * szMask );
 DWORD GetModuleLength( HMODULE hHandle );
 
-void AddChatMessage( const std::string& strText );
-void SendChat( const std::string& strText );
+int AddChatMessage( const std::string& strText );
+int SendChat( const std::string& strText );
+int GetPlayerPos( float& fX, float& fY, float& fZ );

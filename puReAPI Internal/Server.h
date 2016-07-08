@@ -1,11 +1,12 @@
 ﻿#pragma once
 #include "Connection.h"
+#include "Config.h"
 
 using boost::asio::ip::tcp;
 
 class Server {
 public:
-	explicit Server( boost::asio::io_service& io, uint32_t port );
+	explicit Server( boost::asio::io_service& io );
 	void Start( void );
 
 private:

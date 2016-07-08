@@ -160,6 +160,7 @@
   <ItemGroup>
     <ClInclude Include="Calls.h" />
     <ClInclude Include="Client.h" />
+    <ClInclude Include="Config.h" />
     <ClInclude Include="Connection.h" />
     <ClInclude Include="Message.hpp" />
     <ClInclude Include="MessageHandler.h" />
