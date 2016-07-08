@@ -31,17 +31,17 @@ void Connection::handle_read( const boost::system::error_code& ec, std::size_t l
 			READ( msg, eMessage, type );
 
 			if ( type == eMessage::AddChatMessage ) {
-				std::stringstream ss;
-				READ( msg, std::string, texty );
-				ss << "Server " << texty;
-				logFn( ss.str( ) );
+				READ( msg, std::string, strText );
+				AddChatMessage( strText );
+			} else if(type == eMessage::SendChat ) {
+				READ( msg, std::string, strText );
+				SendChat( strText );
 			}
 			read( );
 		}
 	}
 	else {
 		m_socket.close( );
-		logFn( "Client disconnected" );
 	}
 }
 
@@ -56,7 +56,6 @@ void Connection::handle_write( const boost::system::error_code& ec, std::size_t 
 	if ( ec ) {
 		if ( m_socket.is_open( ) ) {
 			m_socket.close( );
-			logFn( "Client disconnected" );
 		}
 	}
 	else {

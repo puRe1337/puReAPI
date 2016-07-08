@@ -4,6 +4,7 @@
 #include <boost/asio.hpp>
 #include "Message.hpp"
 #include <deque>
+#include "MessageHandler.h"
 
 using boost::asio::ip::tcp;
 

@@ -30,6 +30,12 @@
     <ClCompile Include="Connection.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="MessageHandler.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Calls.cpp">
+      <Filter>Headerdateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Server.h">
@@ -42,6 +48,12 @@
       <Filter>Shared Files</Filter>
     </ClInclude>
     <ClInclude Include="Connection.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="MessageHandler.h">
+      <Filter>Quelldateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Calls.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
