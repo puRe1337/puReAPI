@@ -5,6 +5,11 @@ Server::Server( boost::asio::io_service& io ) :
 	m_socket( io ) { }
 
 void Server::Start( ) {
+	if ( g_mMessage.empty( ) ) {
+		BIND_MSG( AddChatMessage );
+		BIND_MSG( SendChat );
+		BIND_MSG( GetPlayerPos );
+	}
 	m_acceptor.async_accept( m_socket, std::bind( &Server::handle_accept, this, std::placeholders::_1 ) );
 }
 

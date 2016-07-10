@@ -27,38 +27,22 @@ void Connection::handle_read( const boost::system::error_code& ec, std::size_t l
 			std::string strData( m_buf.begin( ), m_buf.end( ) );
 			strData.resize( length );
 
-			CMessage msg( strData );
-			READ( msg, eMessage, type );
+			CMessage inMsg( strData );
+			READ( inMsg, eMessage, type );
 
-			if ( type == eMessage::AddChatMessage ) {
-				READ( msg, std::string, strText );
-				int res = AddChatMessage( strText );
-				{
-					CMessage oMsg;
-					WRITE( oMsg, res );
-					write( oMsg );
-				}
-			} else if(type == eMessage::SendChat ) {
-				READ( msg, std::string, strText );
-				int res = SendChat( strText );
-				{
-					CMessage oMsg;
-					WRITE( oMsg, res );
-					write( oMsg );
-				}
+			try {
+				auto it = g_mMessage.find( type );
+				if ( it == g_mMessage.end( ) )
+					return;
+				if ( !g_mMessage[ type ] )
+					return;
+
+				CMessage outMsg;
+				int result = g_mMessage[ type ]( inMsg, outMsg );
+				write( outMsg );
+
 			}
-			else if(type == eMessage::GetPlayerPos ) {
-				float fX, fY, fZ;
-				int res = GetPlayerPos( fX, fY, fZ );
-				{
-					CMessage oMsg;
-					WRITE( oMsg, res );
-					WRITE( oMsg, fX );
-					WRITE( oMsg, fY );
-					WRITE( oMsg, fZ );
-					write( oMsg );
-				}
-			}
+			catch ( ... ) { }
 			read( );
 		}
 	}

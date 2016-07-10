@@ -2,10 +2,16 @@
 #include <Windows.h>
 #include <Psapi.h>
 #include <string>
+#include <map>
+#include "Message.hpp"
 
-DWORD FindPattern( DWORD addr, DWORD len, BYTE *bMask, char * szMask );
+extern std::map< eMessage, std::function< int( CMessage&, CMessage& ) > > g_mMessage;
+
+/* ToDo: Check if Server is available */
+
+DWORD FindPattern( DWORD addr, DWORD len, BYTE* bMask, char* szMask );
 DWORD GetModuleLength( HMODULE hHandle );
 
-int AddChatMessage( const std::string& strText );
-int SendChat( const std::string& strText );
-int GetPlayerPos( float& fX, float& fY, float& fZ );
+int AddChatMessage( CMessage& in, CMessage& out );
+int SendChat( CMessage& in, CMessage& out );
+int GetPlayerPos( CMessage& in, CMessage& out );

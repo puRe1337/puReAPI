@@ -34,6 +34,9 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Calls.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Globals.cpp">
       <Filter>Headerdateien</Filter>
     </ClCompile>
   </ItemGroup>
@@ -57,6 +60,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Config.h">
+      <Filter>Shared Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Globals.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

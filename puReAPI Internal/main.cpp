@@ -1,13 +1,14 @@
 #include "Server.h"
 #include "Client.h"
+#include "Globals.h"
 #include <chrono>
 #include <thread>
 
-int Inject( HMODULE hMod ) {
+int Inject( ) {
 	char szDLLPath[ MAX_PATH + 1 ] = { 0 };
 	DWORD dwPId = 0;
 	BOOL bRetn;
-	GetModuleFileName( ( HMODULE )hMod, szDLLPath, sizeof( szDLLPath ) );
+	GetModuleFileName( g_hModule, szDLLPath, sizeof( szDLLPath ) );
 
 	HWND hWnd = FindWindow( 0, "GTA:SA:MP" );
 	if ( !hWnd )
@@ -88,9 +89,9 @@ void Init( HMODULE hMod ) {
 			bool connected = client->Connect( );
 			while ( !connected ) {
 				/*Can't connect, load dll and start server*/
-				int res = Inject( hMod );
+				int res = Inject( );
 				while ( !res ) {
-					res = Inject( hMod );
+					res = Inject( );
 					std::this_thread::sleep_for( std::chrono::milliseconds( 500 ) );
 				}
 
@@ -106,8 +107,9 @@ void Init( HMODULE hMod ) {
 int WINAPI DllMain( HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved ) {
 	switch ( dwReason ) {
 		case DLL_PROCESS_ATTACH:
+			g_hModule = ( HMODULE )hInstance;
 			DisableThreadLibraryCalls( ( HMODULE )hInstance );
-			CreateThread( 0, 0, ( LPTHREAD_START_ROUTINE )Init, hInstance, 0, 0 );
+			CreateThread( 0, 0, ( LPTHREAD_START_ROUTINE )Init, 0, 0, 0 );
 			break;
 	}
 	return TRUE;
