@@ -3,6 +3,11 @@
 Client::Client( boost::asio::io_service& io ) :
 	m_socket( io ) {}
 
+Client::~Client( ) {
+	if ( m_socket.is_open( ) )
+		Disconnect( );
+}
+
 bool Client::Connect( ) {
 
 	tcp::resolver resolver( m_socket.get_io_service( ) );
@@ -20,22 +25,24 @@ bool Client::Connect( ) {
 }
 
 void Client::Disconnect( ) {
-	m_socket.shutdown( boost::asio::socket_base::shutdown_both );
-	m_socket.close( );
+	if ( m_socket.is_open( ) ) {
+		m_socket.shutdown( boost::asio::socket_base::shutdown_both );
+		m_socket.close( );
+	}
 }
 
 void Client::read( ) {
 	boost::system::error_code ec;
-	boost::asio::read_until( m_socket, m_buff_streambuf, "\\puReAPI", ec );
+	boost::asio::streambuf buff_streambuf;
+	boost::asio::read_until( m_socket, buff_streambuf, "\\puReAPI", ec );
 	if ( !ec ) {
 		std::stringstream ss;
-		std::ostream readstream( &m_buff_streambuf );
+		std::ostream readstream( &buff_streambuf );
 		ss << readstream.rdbuf( );
 		auto strData = ss.str( );
 
 		boost::replace_first( strData, "\\puReAPI", "" );
 
-		//CMessage msg( strData );
 		m_msgOut = CMessage( strData );
 	}
 	Disconnect( );

@@ -14,6 +14,7 @@ using boost::asio::ip::tcp;
 class Client : public std::enable_shared_from_this< Client > {
 public:
 	explicit Client( boost::asio::io_service& io );
+	~Client( );
 	bool Connect( );
 	void Disconnect( );
 	
@@ -27,5 +28,4 @@ private:
 private:
 	CMessage m_msgOut;
 	tcp::socket m_socket;
-	boost::asio::streambuf m_buff_streambuf;
 };

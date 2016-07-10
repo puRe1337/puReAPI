@@ -1,8 +1,9 @@
 ﻿#include "Calls.h"
 
+boost::asio::io_service g_io;
+
 int AddChatMessage( const char* szText ) {
-	boost::asio::io_service io;
-	auto client = std::make_shared<Client>( io );
+	auto client = std::make_shared<Client>( g_io );
 	if ( client->Connect( ) ) {
 		CMessage msg;
 		WRITE( msg, eMessage::AddChatMessage );
@@ -15,12 +16,12 @@ int AddChatMessage( const char* szText ) {
 		client->Disconnect( );
 		return result;
 	}
+	g_io.run( );
 	return -1;
 }
 
 int SendChat( const char* szText ) {
-	boost::asio::io_service io;
-	auto client = std::make_shared<Client>( io );
+	auto client = std::make_shared<Client>( g_io );
 	if ( client->Connect( ) ) {
 		CMessage msg;
 		WRITE( msg, eMessage::SendChat );
@@ -33,12 +34,12 @@ int SendChat( const char* szText ) {
 		client->Disconnect( );
 		return result;
 	}
+	g_io.stop( );
 	return -1;
 }
 
 int GetPlayerPos( float& fX, float& fY, float& fZ ) {
-	boost::asio::io_service io;
-	auto client = std::make_shared<Client>( io );
+	auto client = std::make_shared<Client>( g_io );
 	if ( client->Connect( ) ) {
 		CMessage msg;
 		WRITE( msg, eMessage::GetPlayerPos );
@@ -57,5 +58,6 @@ int GetPlayerPos( float& fX, float& fY, float& fZ ) {
 		client->Disconnect( );
 		return result;
 	}
+	g_io.run( );
 	return -1;
 }

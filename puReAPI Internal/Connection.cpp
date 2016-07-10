@@ -39,6 +39,7 @@ void Connection::handle_read( const boost::system::error_code& ec, std::size_t l
 
 				CMessage outMsg;
 				int result = g_mMessage[ type ]( inMsg, outMsg );
+				WRITE( outMsg, result );
 				write( outMsg );
 
 			}
