@@ -2,31 +2,38 @@
 
 std::map< eMessage, std::function< int( CMessage&, CMessage& ) > > g_mMessage;
 
-DWORD FindPattern( DWORD addr, DWORD len, BYTE* bMask, char* szMask ) {
-	auto dataCompare = []( const BYTE* pData, const BYTE* bMask, const char* szMask ) -> bool {
-		for ( ; *szMask; ++szMask , ++pData , ++bMask )
-			if ( *szMask == 'x' && *pData != *bMask )
-				return false;
-		return ( *szMask ) == NULL;
-	};
-	for ( DWORD i = 0; i < len; i++ )
-		if ( dataCompare( ( BYTE* )( addr + i ), bMask, szMask ) )
-			return ( DWORD )( addr + i );
-	return 0;
+uintptr_t FindSignature( const char* szModule, const char* szSignature ) {
+	//CREDITS: learn_more
+#define INRANGE(x,a,b)  (x >= a && x <= b) 
+#define getBits( x )    (INRANGE((x&(~0x20)),'A','F') ? ((x&(~0x20)) - 'A' + 0xa) : (INRANGE(x,'0','9') ? x - '0' : 0))
+#define getByte( x )    (getBits(x[0]) << 4 | getBits(x[1]))
+
+	MODULEINFO modInfo;
+	GetModuleInformation( GetCurrentProcess( ), GetModuleHandleA( szModule ), &modInfo, sizeof( MODULEINFO) );
+	DWORD startAddress = ( DWORD )modInfo.lpBaseOfDll;
+	DWORD endAddress = startAddress + modInfo.SizeOfImage;
+	const char* pat = szSignature;
+	DWORD firstMatch = 0;
+	for ( DWORD pCur = startAddress; pCur < endAddress; pCur++ ) {
+		if ( !*pat ) return firstMatch;
+		if ( *( PBYTE )pat == '\?' || *( BYTE* )pCur == getByte( pat ) ) {
+			if ( !firstMatch ) firstMatch = pCur;
+			if ( !pat[ 2 ] ) return firstMatch;
+			if ( *( PWORD )pat == '\?\?' || *( PBYTE )pat != '\?' ) pat += 3;
+			else pat += 2; //one ?
+		}
+		else {
+			pat = szSignature;
+			firstMatch = 0;
+		}
+	}
+	return NULL;
 }
 
-DWORD GetModuleLength( HMODULE hHandle ) {
-	MODULEINFO info;
-	GetModuleInformation( GetCurrentProcess( ), hHandle, &info, sizeof( info ) );
-	return info.SizeOfImage;
-}
 
 int AddChatMessage( CMessage& in, CMessage& out ) {
-	static DWORD dwSAMP = ( DWORD )GetModuleHandle( "samp.dll" );
-	static DWORD dwSize = GetModuleLength( ( HMODULE )dwSAMP );
-	static auto dwAddress = FindPattern( dwSAMP, dwSize, ( PBYTE )"\x55\x8B\xEC\x83\xE4\xF8\x81\xEC\x00\x00\x00\x00\x57\x33\xC0\xB9\x00\x00\x00\x00\x8D\x7C\x24\x08\xF3\xAB\x8B\x4D\x0C\x8D\x45\x10\x50\x51\x8D\x54\x24\x10\x52\xE8\x00\x00\x00\x00\x8A\x4C\x24\x14\x83\xC4\x0C\x84\xC9\x8D\x44\x24\x08\x74\x1B\xEB\x03\x8D\x49\x00\x8A\x08\x84\xC9\x7E\x08\x80\xF9\x20\x7D\x03\xC6\x00\x20\x8A\x48\x01\x40\x84\xC9\x75\xEA\x8B\x4D\x08\x8B\x81\x00\x00\x00\x00\x6A\x00\x50\x6A\x00\x8D\x54\x24\x14\x52\x6A\x08",
-	                                     "xxxxxxxx????xxxx????xxxxxxxxxxxxxxxxxxxx????xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx????xxxxxxxxxxxx" )/* wir wollen ja direkt die funktion aufrufen - dwSAMP*/;
-	static auto dwChatInfo = *( DWORD* )( *( DWORD* )( FindPattern( dwSAMP, dwSize, ( PBYTE )"\xA1\x00\x00\x00\x00\x68\x00\x00\x00\x00\x50\xE8\x00\x00\x00\x00\x83\xC4\x08\xC2\x04\x00", "x????x????xx????xxxxxx" ) + 0x1 )/* - dwSAMP*/ );
+	static auto dwAddress = FindSignature( "samp.dll", "55 8B EC 83 E4 F8 81 EC ? ? ? ? 57 33 C0 B9 ? ? ? ? 8D 7C 24 08 F3 AB 8B 4D 0C 8D 45 10 50 51 8D 54 24 10 52 E8 ? ? ? ? 8A 4C 24 14 83 C4 0C 84 C9 8D 44 24 08 74 1B EB 03 8D 49 00 8A 08 84 C9 7E 08 80 F9 20 7D 03 C6 00 20 8A 48 01 40 84 C9 75 EA 8B 4D 08 8B 81 ? ? ? ? 6A 00 50 6A 00 8D 54 24 14 52 6A 08" )/* wir wollen ja direkt die funktion aufrufen - dwSAMP*/;
+	static auto dwChatInfo = *( uintptr_t* )( *( uintptr_t* )( FindSignature( "samp.dll", "A1 ? ? ? ? 68 ? ? ? ? 50 E8 ? ? ? ? 83 C4 08 C2 04 00" ) + 0x1 )/* - dwSAMP*/ );
 	if ( !dwChatInfo || !dwAddress )
 		return 0;
 
@@ -43,10 +50,8 @@ int AddChatMessage( CMessage& in, CMessage& out ) {
 }
 
 int SendChat( CMessage& in, CMessage& out ) {
-	static DWORD dwSAMP = ( DWORD )GetModuleHandle( "samp.dll" );
-	static DWORD dwSize = GetModuleLength( ( HMODULE )dwSAMP );
-	static auto dwAddressText = FindPattern( dwSAMP, dwSize, ( PBYTE )"\x64\xA1\x00\x00\x00\x00\x6A\xFF\x68\x00\x00\x00\x00\x50\x64\x89\x25\x00\x00\x00\x00\x81\xEC\x00\x00\x00\x00\x53\x56\x8B\xB4\x24\x00\x00\x00\x00\x8B\xC6", "xx????xxx????xxxx????xx????xxxxx????xx" );
-	static auto dwAddressCmd = FindPattern( dwSAMP, dwSize, ( PBYTE )"\x64\xA1\x00\x00\x00\x00\x6A\xFF\x68\x00\x00\x00\x00\x50\xA1\x00\x00\x00\x00\x64\x89\x25\x00\x00\x00\x00\x81\xEC\x00\x00\x00\x00\x85\xC0", "xx????xxx????xx????xxx????xx????xx" );
+	static auto dwAddressText = FindSignature( "samp.dll","64 A1 ? ? ? ? 6A FF 68 ? ? ? ? 50 64 89 25 ? ? ? ? 81 EC ? ? ? ? 53 56 8B B4 24 ? ? ? ? 8B C6" );
+	static auto dwAddressCmd = FindSignature( "samp.dll", "64 A1 ? ? ? ? 6A FF 68 ? ? ? ? 50 A1 ? ? ? ? 64 89 25 ? ? ? ? 81 EC ? ? ? ? 85 C0" );
 	if ( !dwAddressText || !dwAddressCmd )
 		return 0;
 
@@ -77,6 +82,25 @@ int GetPlayerPos( CMessage& in, CMessage& out ) {
 	WRITE( out, fX );
 	WRITE( out, fY );
 	WRITE( out, fZ );
+
+	return 1;
+}
+
+int ShowGameText( CMessage& in, CMessage& out ) {
+	static auto dwAddress = FindSignature( "samp.dll", "55 8B EC 81 7D" ); /*"55 8B EC 81 7D ? ? ? ? ? 7F 36 68 ? ? ? ? E8"*/
+	if ( !dwAddress )
+		return 0;
+
+	READ( in, std::string, strText );
+	READ( in, int, iTime );
+	READ( in, int, iStyle );
+
+	auto text = strText.c_str( );
+
+	__asm push iStyle
+	__asm push iTime
+	__asm push text
+	__asm call dwAddress
 
 	return 1;
 }

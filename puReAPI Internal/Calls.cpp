@@ -34,7 +34,7 @@ int SendChat( const char* szText ) {
 		client->Disconnect( );
 		return result;
 	}
-	g_io.stop( );
+	g_io.run( );
 	return -1;
 }
 
@@ -55,6 +55,26 @@ int GetPlayerPos( float& fX, float& fY, float& fZ ) {
 		fX = fX_;
 		fY = fY_;
 		fZ = fZ_;
+		client->Disconnect( );
+		return result;
+	}
+	g_io.run( );
+	return -1;
+}
+
+int ShowGameText( const char* szText, int iTime, int iStyle ) {
+	auto client = std::make_shared<Client>( g_io );
+	if ( client->Connect( ) ) {
+		CMessage msg;
+		WRITE( msg, eMessage::ShowGameText );
+		WRITE( msg, ( std::string )szText );
+		WRITE( msg, iTime );
+		WRITE( msg, iStyle );
+
+		client->write( msg );
+
+		client->read( );
+		READ( client->outMsg( ), int, result );
 		client->Disconnect( );
 		return result;
 	}

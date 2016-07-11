@@ -11,7 +11,8 @@
 enum class eMessage : int {
 	SendChat = 1,
 	AddChatMessage,
-	GetPlayerPos
+	GetPlayerPos,
+	ShowGameText
 };
 
 #define READ(MSG, TYPE, VARNAME) TYPE VARNAME; MSG >> VARNAME;

@@ -9,9 +9,9 @@ extern std::map< eMessage, std::function< int( CMessage&, CMessage& ) > > g_mMes
 
 /* ToDo: Check if Server is available */
 
-DWORD FindPattern( DWORD addr, DWORD len, BYTE* bMask, char* szMask );
-DWORD GetModuleLength( HMODULE hHandle );
+uintptr_t FindSignature( const char* szModule, const char* szSignature );
 
 int AddChatMessage( CMessage& in, CMessage& out );
 int SendChat( CMessage& in, CMessage& out );
 int GetPlayerPos( CMessage& in, CMessage& out );
+int ShowGameText( CMessage& in, CMessage& out );

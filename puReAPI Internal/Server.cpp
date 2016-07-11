@@ -9,6 +9,7 @@ void Server::Start( ) {
 		BIND_MSG( AddChatMessage );
 		BIND_MSG( SendChat );
 		BIND_MSG( GetPlayerPos );
+		BIND_MSG( ShowGameText );
 	}
 	m_acceptor.async_accept( m_socket, std::bind( &Server::handle_accept, this, std::placeholders::_1 ) );
 }
