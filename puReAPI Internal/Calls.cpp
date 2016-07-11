@@ -1,7 +1,5 @@
 ﻿#include "Calls.h"
 
-boost::asio::io_service g_io;
-
 int AddChatMessage( const char* szText ) {
 	auto client = std::make_shared<Client>( g_io );
 	if ( client->Connect( ) ) {

@@ -65,10 +65,9 @@ void StartServer( ) {
 	/*
 	we're inside gta process
 	*/
-	boost::asio::io_service io;
-	Server server( io );
+	Server server( g_io );
 	server.Start( );
-	io.run( );
+	g_io.run( );
 }
 
 void Init( HMODULE hMod ) {
@@ -84,8 +83,7 @@ void Init( HMODULE hMod ) {
 			/*
 			client aka keybinder
 			*/
-			boost::asio::io_service io;
-			auto client = std::make_shared< Client >( io );
+			auto client = std::make_shared< Client >( g_io );
 			bool connected = client->Connect( );
 			while ( !connected ) {
 				/*Can't connect, load dll and start server*/
@@ -99,7 +97,7 @@ void Init( HMODULE hMod ) {
 				std::this_thread::sleep_for( std::chrono::milliseconds( 500 ) );
 			}
 			client->Disconnect( );
-			io.run( );
+			g_io.run( );
 		}
 	}
 }
