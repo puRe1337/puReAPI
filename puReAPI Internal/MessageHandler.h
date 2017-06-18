@@ -7,8 +7,6 @@
 
 extern std::map< eMessage, std::function< int( CMessage&, CMessage& ) > > g_mMessage;
 
-/* ToDo: Check if Server is available */
-
 uintptr_t FindSignature( const char* szModule, const char* szSignature );
 
 int AddChatMessage( CMessage& in, CMessage& out );

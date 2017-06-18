@@ -1,8 +1,8 @@
 ﻿#include "Server.h"
 
 Server::Server( boost::asio::io_service& io ) :
-	m_acceptor( io, tcp::endpoint( tcp::v4( ), g_uiPort ), false ),
-	m_socket( io ) { }
+	m_socket( io ),
+	m_acceptor( io, tcp::endpoint( tcp::v4( ), Config::g_uiPort ), false ) { }
 
 void Server::Start( ) {
 	if ( g_mMessage.empty( ) ) {

@@ -1,4 +1,4 @@
-﻿#include "Connection.h"
+#include "Connection.h"
 #include "Client.h"
 
 Connection::Connection( tcp::socket socket ) :

@@ -27,17 +27,17 @@
     <ClCompile Include="Client.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Connection.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="MessageHandler.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Calls.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Connection.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
     <ClCompile Include="Globals.cpp">
-      <Filter>Headerdateien</Filter>
+      <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -50,9 +50,6 @@
     <ClInclude Include="Message.hpp">
       <Filter>Shared Files</Filter>
     </ClInclude>
-    <ClInclude Include="Connection.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="Calls.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -63,6 +60,9 @@
       <Filter>Shared Files</Filter>
     </ClInclude>
     <ClInclude Include="Globals.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Connection.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

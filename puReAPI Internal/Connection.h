@@ -1,14 +1,17 @@
-﻿#pragma once
+#pragma once
 #define WIN32_LEAN_AND_MEAN
+#include <deque>
+
 #include <Windows.h>
 #include <boost/asio.hpp>
+
 #include "Message.hpp"
-#include <deque>
 #include "MessageHandler.h"
 
 using boost::asio::ip::tcp;
 
-class Connection : public std::enable_shared_from_this< Connection > {
+class Connection : public std::enable_shared_from_this< Connection >
+{
 public:
 	explicit Connection( tcp::socket socket );
 	void start( void );

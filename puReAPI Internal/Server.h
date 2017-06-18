@@ -7,7 +7,8 @@
 
 using boost::asio::ip::tcp;
 
-class Server {
+class Server
+{
 public:
 	explicit Server( boost::asio::io_service& io );
 	void Start( void );

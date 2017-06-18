@@ -33,7 +33,7 @@ uintptr_t FindSignature( const char* szModule, const char* szSignature ) {
 
 int AddChatMessage( CMessage& in, CMessage& out ) {
 	static auto dwAddress = FindSignature( "samp.dll", "55 8B EC 83 E4 F8 81 EC ? ? ? ? 57 33 C0 B9 ? ? ? ? 8D 7C 24 08 F3 AB 8B 4D 0C 8D 45 10 50 51 8D 54 24 10 52 E8 ? ? ? ? 8A 4C 24 14 83 C4 0C 84 C9 8D 44 24 08 74 1B EB 03 8D 49 00 8A 08 84 C9 7E 08 80 F9 20 7D 03 C6 00 20 8A 48 01 40 84 C9 75 EA 8B 4D 08 8B 81 ? ? ? ? 6A 00 50 6A 00 8D 54 24 14 52 6A 08" )/* wir wollen ja direkt die funktion aufrufen - dwSAMP*/;
-	static auto dwChatInfo = *( uintptr_t* )( *( uintptr_t* )( FindSignature( "samp.dll", "A1 ? ? ? ? 68 ? ? ? ? 50 E8 ? ? ? ? 83 C4 08 C2 04 00" ) + 0x1 )/* - dwSAMP*/ );
+	static auto dwChatInfo = *(uintptr_t*)( *(uintptr_t*)( FindSignature( "samp.dll", "A1 ? ? ? ? 68 ? ? ? ? 50 E8 ? ? ? ? 83 C4 08 C2 04 00" ) + 0x1 )/* - dwSAMP*/ );
 	if ( !dwChatInfo || !dwAddress )
 		return 0;
 
@@ -50,7 +50,7 @@ int AddChatMessage( CMessage& in, CMessage& out ) {
 }
 
 int SendChat( CMessage& in, CMessage& out ) {
-	static auto dwAddressText = FindSignature( "samp.dll","64 A1 ? ? ? ? 6A FF 68 ? ? ? ? 50 64 89 25 ? ? ? ? 81 EC ? ? ? ? 53 56 8B B4 24 ? ? ? ? 8B C6" );
+	static auto dwAddressText = FindSignature( "samp.dll", "64 A1 ? ? ? ? 6A FF 68 ? ? ? ? 50 64 89 25 ? ? ? ? 81 EC ? ? ? ? 53 56 8B B4 24 ? ? ? ? 8B C6" );
 	static auto dwAddressCmd = FindSignature( "samp.dll", "64 A1 ? ? ? ? 6A FF 68 ? ? ? ? 50 A1 ? ? ? ? 64 89 25 ? ? ? ? 81 EC ? ? ? ? 85 C0" );
 	if ( !dwAddressText || !dwAddressCmd )
 		return 0;
@@ -66,18 +66,18 @@ int SendChat( CMessage& in, CMessage& out ) {
 }
 
 int GetPlayerPos( CMessage& in, CMessage& out ) {
-	uintptr_t cped = *( uintptr_t* )0xB6F5F0;
+	uintptr_t cped = *(uintptr_t*)0xB6F5F0;
 	if ( !cped )
 		return 0;
-	uintptr_t mtrx = *( uintptr_t* )( cped + 0x14 );
+	uintptr_t mtrx = *(uintptr_t*)( cped + 0x14 );
 	if ( !mtrx )
 		return 0;
 
 	float fX, fY, fZ;
 
-	fX = *( float* )( mtrx + 0x30 );
-	fY = *( float* )( mtrx + 0x34 );
-	fZ = *( float* )( mtrx + 0x38 );
+	fX = *(float*)( mtrx + 0x30 );
+	fY = *(float*)( mtrx + 0x34 );
+	fZ = *(float*)( mtrx + 0x38 );
 
 	WRITE( out, fX );
 	WRITE( out, fY );

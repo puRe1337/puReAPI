@@ -8,7 +8,8 @@
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
 
-enum class eMessage : int {
+enum class eMessage : int
+{
 	SendChat = 1,
 	AddChatMessage,
 	GetPlayerPos,
@@ -18,7 +19,8 @@ enum class eMessage : int {
 #define READ(MSG, TYPE, VARNAME) TYPE VARNAME; MSG >> VARNAME;
 #define WRITE(MSG, VAR) MSG << VAR;
 
-class CMessage {
+class CMessage
+{
 	typedef boost::archive::text_iarchive iarchive;
 	typedef boost::archive::text_oarchive oarchive;
 public:
@@ -42,13 +44,13 @@ public:
 		m_iarchive.reset( );
 	}
 
-	template <class T>
+	template < class T >
 	CMessage& operator<<( const T& t ) {
 		( *m_oarchive ) & t;
 		return *this;
 	}
 
-	template <class T>
+	template < class T >
 	CMessage& operator >>( T& t ) {
 		( *m_iarchive ) & t;
 		return *this;
