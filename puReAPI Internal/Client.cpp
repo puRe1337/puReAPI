@@ -8,11 +8,66 @@ Client::~Client( ) {
 		Disconnect( );
 }
 
-bool Client::Connect( ) {
+int Client::Init( ) {
+	char szDLLPath[MAX_PATH + 1] = { 0 };
+	DWORD dwPId = 0;
+	GetModuleFileName( g_hModule, szDLLPath, sizeof szDLLPath );
 
+	HWND hWnd = FindWindow( nullptr, "GTA:SA:MP" );
+	if ( !hWnd )
+		return 0;
+	GetWindowThreadProcessId( hWnd, &dwPId );
+
+	if ( dwPId == 0 )
+		return 0;
+
+	auto hHandle = OpenProcess( ( STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xFFF ), FALSE, dwPId );
+	if ( hHandle == 0 || hHandle == INVALID_HANDLE_VALUE )
+		return 0;
+
+	auto pAddr = VirtualAllocEx( hHandle, NULL, strlen( szDLLPath ) + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE );
+	if ( pAddr == NULL ) {
+		CloseHandle( hHandle );
+		return 0;
+	}
+
+	BOOL bRetn = WriteProcessMemory( hHandle, pAddr, szDLLPath, strlen( szDLLPath ) + 1, NULL );
+	if ( bRetn == FALSE ) {
+		VirtualFreeEx( hHandle, pAddr, strlen( szDLLPath ) + 1, MEM_RELEASE );
+		CloseHandle( hHandle );
+		return 0;
+	}
+
+	DWORD dwBase = 0;
+
+	// Load DLL-file
+	{
+		auto pFunc = (LPTHREAD_START_ROUTINE)GetProcAddress( GetModuleHandleA( "kernel32.dll" ), "LoadLibraryA" );
+		if ( pFunc == NULL ) {
+			VirtualFreeEx( hHandle, pAddr, strlen( szDLLPath ) + 1, MEM_RELEASE );
+			CloseHandle( hHandle );
+			return 0;
+		}
+
+		auto hThread = CreateRemoteThread( hHandle, 0, 0, pFunc, pAddr, 0, 0 );
+		if ( hThread == NULL || hThread == INVALID_HANDLE_VALUE ) {
+			VirtualFreeEx( hHandle, pAddr, strlen( szDLLPath ) + 1, MEM_RELEASE );
+			CloseHandle( hHandle );
+			return 0;
+		}
+
+		WaitForSingleObject( hThread, INFINITE );
+		GetExitCodeThread( hThread, &dwBase );
+		VirtualFreeEx( hHandle, pAddr, strlen( szDLLPath ) + 1, MEM_RELEASE );
+		CloseHandle( hThread );
+	}
+	return 1;
+}
+
+bool Client::Connect( ) {
 	tcp::resolver resolver( m_socket.get_io_service( ) );
-	auto strPort = std::to_string( g_uiPort );
-	auto endpoint_it = resolver.resolve( { g_strIP, strPort } );
+	auto strPort = std::to_string( Config::g_uiPort );
+	auto endpoint_it = resolver.resolve( { Config::g_strIP, strPort } );
 
 	boost::system::error_code ec;
 
